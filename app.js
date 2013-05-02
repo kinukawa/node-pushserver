@@ -36,7 +36,6 @@ app.get('/',function(req,res){
 
   res.render('index', { title: 'Express' });
 });
-app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -52,27 +51,28 @@ console.log('WebSocket server listening on port 3001');
 wss.on('connection', function(ws) {
   connections.push(ws);
   console.log('WebSocket connect.');
-
-  //切断時
-  ws.on('close', function () {
-    console.log('close');
-    connections = connections.filter(function (conn, i) {
-      return (conn === ws) ? false : true;
-    });
-  });
-
-  ws.on('message', function(message) {
-    try {
-      var json = JSON.parse(message);
-      console.log('received: %s,%s', json.message,json.name);
-      for(var i = 0; i < connections.length; i++){
-        var target_ws = connections[i];
-        var reply = {message:json.message,name:json.name};
-        target_ws.send(JSON.stringify(reply));
-      }
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-  });
+  ws.on('close', wsOnClose);
+  ws.on('message', wsOnMessage);
 });
+
+function wsOnMessage(message) {
+  try {
+    var json = JSON.parse(message);
+    console.log('received: %s,%s', json.message,json.name);
+    for(var i = 0; i < connections.length; i++){
+      var target_ws = connections[i];
+      var reply = {message:json.message,name:json.name};
+      target_ws.send(JSON.stringify(reply));
+    }
+  } catch (e) {
+    console.log(e);
+    return;
+  }
+}
+
+function wsOnClose() {
+  console.log('close');
+  connections = connections.filter(function (conn, i) {
+    return (conn === ws) ? false : true;
+  })
+}
