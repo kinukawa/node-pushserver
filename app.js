@@ -55,6 +55,7 @@ wss.on('connection', function(ws) {
   ws.on('message', wsOnMessage);
 });
 
+//websocket受信時
 function wsOnMessage(message) {
   try {
     var json = JSON.parse(message);
@@ -70,6 +71,7 @@ function wsOnMessage(message) {
   }
 }
 
+//websocketクローズ時
 function wsOnClose() {
   console.log('close');
   connections = connections.filter(function (conn, i) {
