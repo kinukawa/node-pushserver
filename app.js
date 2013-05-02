@@ -37,11 +37,13 @@ http.createServer(app).listen(app.get('port'), function(){
 /**
  * websocket
  */
-var webSocketServer = require('ws').Server;
+var WebSocketServer = require('ws').Server;
 var wss = new WebSocketServer({port: 3001});
 var connections = [];
+console.log('WebSocket server listening on port 3001');
 wss.on('connection', function(ws) {
   connections.push(ws);
+  console.log('WebSocket connect.');
 
   //切断時
   ws.on('close', function () {
