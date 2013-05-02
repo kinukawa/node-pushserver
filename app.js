@@ -27,7 +27,15 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
+app.get('/',function(req,res){
+  for(var i = 0; i < connections.length; i++){
+    var target_ws = connections[i];
+    var reply = {message:"hoge",name:"fuga"};
+    target_ws.send(JSON.stringify(reply));
+  }
+
+  res.render('index', { title: 'Express' });
+});
 app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){
