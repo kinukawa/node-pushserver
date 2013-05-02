@@ -70,3 +70,5 @@ function wsOnClose() {
     return (conn === ws) ? false : true;
   })
 }
+
+require('./authenticator');
