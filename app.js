@@ -44,30 +44,28 @@ console.log('WebSocket server listening on port ' + ws_port);
 wss.on('connection', function(ws) {
   connection.connections.push(ws);
   console.log('WebSocket connect.');
-  ws.on('close', wsOnClose);
-  ws.on('message', wsOnMessage);
+
+  ws.on('message', function(message) {
+    try {
+      var json = JSON.parse(message);
+      console.log('received: %s', json.authorize);
+      for(var i = 0; i < connection.connections.length; i++){
+        var target_ws = connection.connections[i];
+        var reply = {message:json.message,name:json.name};
+        target_ws.send(JSON.stringify(reply));
+      }
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  });
+
+  ws.on('close', function (){
+    console.log('close');
+    connection.connections = connection.connections.filter(function (conn, i) {
+      return (conn === ws) ? false : true;
+    })
+  });
+
 });
 
-//websocket受信時
-function wsOnMessage(message) {
-  try {
-    var json = JSON.parse(message);
-    console.log('received: %s,%s', json.message,json.name);
-    for(var i = 0; i < connection.connections.length; i++){
-      var target_ws = connection.connections[i];
-      var reply = {message:json.message,name:json.name};
-      target_ws.send(JSON.stringify(reply));
-    }
-  } catch (e) {
-    console.log(e);
-    return;
-  }
-}
-
-//websocketクローズ時
-function wsOnClose() {
-  console.log('close');
-  connection.connections = connection.connections.filter(function (conn, i) {
-    return (conn === ws) ? false : true;
-  })
-}
