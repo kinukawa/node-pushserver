@@ -12,7 +12,7 @@ var express = require('express')
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 2999);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -37,9 +37,10 @@ http.createServer(app).listen(app.get('port'), function(){
  * websocket
  */
 var WebSocketServer = require('ws').Server;
-var wss = new WebSocketServer({port: 3001});
+var ws_port = 2998;
+var wss = new WebSocketServer({port: ws_port});
 var connection = require('./connection');
-console.log('WebSocket server listening on port 3001');
+console.log('WebSocket server listening on port ' + ws_port);
 wss.on('connection', function(ws) {
   connection.connections.push(ws);
   console.log('WebSocket connect.');
@@ -70,5 +71,3 @@ function wsOnClose() {
     return (conn === ws) ? false : true;
   })
 }
-
-require('./authenticator');
