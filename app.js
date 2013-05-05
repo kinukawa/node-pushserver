@@ -47,12 +47,14 @@ wss.on('connection', function(ws) {
 
   ws.on('message', function(message) {
     try {
-      console.log(message);
+      //console.log(message);
       var json = JSON.parse(message);
       if (json.authorize){
-        authorize.request(json.authorize, function(isAuthorized){
-          if (isAuthorized){
+        authorize.request(json.authorize, function(response){
+          console.log(response);
+          if (response.confirm){
             ws.send("{\"authorize\":\"true\"}");
+            console.log(response.user.id);
             connection.connections.push(ws);
           }else{
             ws.send("{\"authorize\":\"false\"}");

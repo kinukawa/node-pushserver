@@ -14,7 +14,7 @@ exports.request = function(cookie, callback){
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
       var json = JSON.parse(chunk);
-      callback(json.confirm);
+      callback(json);
     });
   });
 
