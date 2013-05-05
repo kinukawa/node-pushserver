@@ -43,14 +43,22 @@ var authorize = require('./authorize');
 var connection = require('./connection');
 console.log('WebSocket server listening on port ' + ws_port);
 wss.on('connection', function(ws) {
-  connection.connections.push(ws);
   console.log('WebSocket connect.');
 
   ws.on('message', function(message) {
     try {
+      console.log(message);
       var json = JSON.parse(message);
       if (json.authorize){
-        authorize.request(json.authorize, null);
+        authorize.request(json.authorize, function(isAuthorized){
+          if (isAuthorized){
+            ws.send("{\"authorize\":\"true\"}");
+            connection.connections.push(ws);
+          }else{
+            ws.send("{\"authorize\":\"false\"}");
+            ws.terminate();
+          }
+        });
       }
     } catch (e) {
       console.log(e);
