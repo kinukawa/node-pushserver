@@ -12,7 +12,7 @@ var express = require('express')
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 2999);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -37,38 +37,41 @@ http.createServer(app).listen(app.get('port'), function(){
  * websocket
  */
 var WebSocketServer = require('ws').Server;
-var wss = new WebSocketServer({port: 3001});
+var ws_port = 2998;
+var wss = new WebSocketServer({port: ws_port});
+var authorize = require('./authorize');
 var connection = require('./connection');
-console.log('WebSocket server listening on port 3001');
+console.log('WebSocket server listening on port ' + ws_port);
 wss.on('connection', function(ws) {
-  connection.connections.push(ws);
   console.log('WebSocket connect.');
-  ws.on('close', wsOnClose);
-  ws.on('message', wsOnMessage);
+
+  ws.on('message', function(message) {
+    try {
+      console.log(message);
+      var json = JSON.parse(message);
+      if (json.authorize){
+        authorize.request(json.authorize, function(isAuthorized){
+          if (isAuthorized){
+            ws.send("{\"authorize\":\"true\"}");
+            connection.connections.push(ws);
+          }else{
+            ws.send("{\"authorize\":\"false\"}");
+            ws.terminate();
+          }
+        });
+      }
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  });
+
+  ws.on('close', function (){
+    console.log('close');
+    connection.connections = connection.connections.filter(function (conn, i) {
+      return (conn === ws) ? false : true;
+    })
+  });
+
 });
 
-//websocket受信時
-function wsOnMessage(message) {
-  try {
-    var json = JSON.parse(message);
-    console.log('received: %s,%s', json.message,json.name);
-    for(var i = 0; i < connection.connections.length; i++){
-      var target_ws = connection.connections[i];
-      var reply = {message:json.message,name:json.name};
-      target_ws.send(JSON.stringify(reply));
-    }
-  } catch (e) {
-    console.log(e);
-    return;
-  }
-}
-
-//websocketクローズ時
-function wsOnClose() {
-  console.log('close');
-  connection.connections = connection.connections.filter(function (conn, i) {
-    return (conn === ws) ? false : true;
-  })
-}
-
-require('./authenticator');
