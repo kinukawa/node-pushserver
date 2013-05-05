@@ -39,6 +39,7 @@ http.createServer(app).listen(app.get('port'), function(){
 var WebSocketServer = require('ws').Server;
 var ws_port = 2998;
 var wss = new WebSocketServer({port: ws_port});
+var authorize = require('./authorize');
 var connection = require('./connection');
 console.log('WebSocket server listening on port ' + ws_port);
 wss.on('connection', function(ws) {
@@ -48,11 +49,8 @@ wss.on('connection', function(ws) {
   ws.on('message', function(message) {
     try {
       var json = JSON.parse(message);
-      console.log('received: %s', json.authorize);
-      for(var i = 0; i < connection.connections.length; i++){
-        var target_ws = connection.connections[i];
-        var reply = {message:json.message,name:json.name};
-        target_ws.send(JSON.stringify(reply));
+      if (json.authorize){
+        authorize.request(json.authorize, null);
       }
     } catch (e) {
       console.log(e);
