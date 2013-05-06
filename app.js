@@ -6,7 +6,7 @@
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
-  , PushReceiver = require('./routes/PushReceiver')
+  , PushNotifications = require('./routes/PushNotifications')
   , http = require('http')
   , path = require('path');
 
@@ -29,7 +29,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/',routes.index);
-app.post('/',PushReceiver.receive);
+app.post('/',PushNotifications.create);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -42,7 +42,6 @@ var WebSocketServer = require('ws').Server;
 var ws_port = 2998;
 var wss = new WebSocketServer({port: ws_port});
 var authorize = require('./authorize');
-var connection = require('./connection');
 console.log('WebSocket server listening on port ' + ws_port);
 wss.on('connection', function(ws) {
   console.log('WebSocket connect.');
