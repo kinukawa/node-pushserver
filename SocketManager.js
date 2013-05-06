@@ -1,16 +1,18 @@
 var WebSocket = require('ws');
 var index = [];
 
-exports.setWebsocket = function(websocket, user){
-  if (index[user.id]){
-    wsArray = index[user.id];
+exports.setWebsocket = function(websocket, user_id){
+  if (index[user_id]){
+    wsArray = index[user_id];
     wsArray = removeClosedSocket(wsArray);
     wsArray.push(websocket);
-    index[user.id] = wsArray;
+    index[user_id] = wsArray;
   } else {
     var webSockets = [websocket];
-    index[user.id] = webSockets;
+    index[user_id] = webSockets;
   }
+
+  console.log("SocketManager.index = " + index);
 };
 
 exports.getWebSockets = function(user_id) {

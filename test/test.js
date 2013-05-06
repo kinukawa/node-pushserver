@@ -8,7 +8,7 @@ describe('SocketManager', function(){
       var dummyWs = {};
       var user = {id:i};
       dummyWs.readyState = 0;
-      SocketManager.setWebsocket(dummyWs, user);
+      SocketManager.setWebsocket(dummyWs, user.id);
     }
 
     var wsa = SocketManager.getWebSockets(0);
@@ -28,16 +28,16 @@ describe('SocketManager', function(){
     var dummyWs = {};
     var user = {id:3};
     dummyWs.readyState = 0;
-    SocketManager.setWebsocket(dummyWs, user);
+    SocketManager.setWebsocket(dummyWs, user.id);
     dummyWs = {};
 
     user = {id:5};
     dummyWs.readyState = 0;
-    SocketManager.setWebsocket(dummyWs, user);
+    SocketManager.setWebsocket(dummyWs, user.id);
 
     user = {id:7};
     dummyWs.readyState = 0;
-    SocketManager.setWebsocket(dummyWs, user);
+    SocketManager.setWebsocket(dummyWs, user.id);
 
     for (var i = 1; i <= 10; i++){ 
       var wsa = SocketManager.getWebSockets(i);

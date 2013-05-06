@@ -40,7 +40,8 @@ var WebSocketServer = require('ws').Server;
 var ws_port = 2998;
 var wss = new WebSocketServer({port: ws_port});
 var authorize = require('./authorize');
-var connection = require('./connection');
+var SocketManager = require('./SocketManager');
+
 console.log('WebSocket server listening on port ' + ws_port);
 wss.on('connection', function(ws) {
   console.log('WebSocket connect.');
@@ -51,11 +52,9 @@ wss.on('connection', function(ws) {
       var json = JSON.parse(message);
       if (json.authorize){
         authorize.request(json.authorize, function(response){
-          console.log(response);
           if (response.confirm){
             ws.send("{\"authorize\":\"true\"}");
-            console.log(response.user.id);
-            connection.connections.push(ws);
+            SocketManager.setWebsocket(ws, response.user.id);
           }else{
             ws.send("{\"authorize\":\"false\"}");
             ws.terminate();
@@ -70,9 +69,6 @@ wss.on('connection', function(ws) {
 
   ws.on('close', function (){
     console.log('close');
-    connection.connections = connection.connections.filter(function (conn, i) {
-      return (conn === ws) ? false : true;
-    })
   });
 
 });
