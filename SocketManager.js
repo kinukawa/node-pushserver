@@ -1,11 +1,31 @@
-var websocket = require('ws');
+var WebSocket = require('ws');
 var index = [];
 
 exports.setWebsocket = function(websocket, user){
   if (index[user.id]){
     wsArray = index[user.id];
-    wsArray = wsArray.filter(function(ws, i) {
-      return (ws.readyState != websocket.CLOSED);
-    });
+    wsArray = removeClosedSocket(wsArray);
+    wsArray.push(websocket);
+    index[user.id] = wsArray;
+  } else {
+    var webSockets = [websocket];
+    index[user.id] = webSockets;
   }
 };
+
+exports.getWebSockets = function(user_id) {
+  var webSockets = index[user_id];
+  if (webSockets) {
+    webSockets = removeClosedSocket(webSockets);
+    index[user_id] = webSockets;
+    return webSockets;
+  } else {
+    return null;
+  }
+};
+
+function removeClosedSocket(arr) {
+  return arr.filter(function(ws, i) {
+    return (ws.readyState != WebSocket.CLOSED);
+  });
+}
