@@ -55,5 +55,18 @@ describe('SocketManager', function(){
 
   it('websocketのreadyStateがCLOSEDのオブジェクトは適当なタイミングで破棄されるべき', function(){
 
+    var wsa = SocketManager.getWebSockets(3);
+    wsa[0].readyState = WebSocket.CLOSED;
+
+    wsa = SocketManager.getWebSockets(5);
+    wsa[0].readyState = WebSocket.CLOSED;
+
+    wsa = SocketManager.getWebSockets(7);
+    wsa[0].readyState = WebSocket.CLOSED;
+
+    for (var i = 1; i <= 10; i++){ 
+      var wsa = SocketManager.getWebSockets(i);
+      wsa.length.should.equal(1);
+    }
   });
 });
