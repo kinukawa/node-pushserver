@@ -1,8 +1,15 @@
 /*
  * receive push notification. 
  */
+var SocketManager = require('../SocketManager');
 
 exports.create = function(req, res){
-  console.log(req.body);
-  res.send("");
+  var user_id = req.body.user_id;
+  var data = req.body.data;
+  var wsArr = SocketManager.getWebSockets(user_id);
+  for (var i = 0; i < wsArr.length; i++){
+    var ws = wsArr[i];
+    ws.send(data);
+  }
+  res.send("ok");
 };
