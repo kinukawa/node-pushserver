@@ -1,5 +1,5 @@
 var http = require('http');
-var settings = require('settings');
+var settings = require('./settings');
 
 exports.request = function(cookie, callback){
   var post_data = 'cookie_string='+cookie;
