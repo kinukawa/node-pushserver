@@ -1,11 +1,17 @@
 var http = require('http');
+var settings = require('settings');
 
 exports.request = function(cookie, callback){
+  var post_data = 'cookie_string='+cookie;
   var options = {
-    host: 'localhost',
-    port: 3000,
-    path: '/api/sessions/confirm.json',
-    method: 'POST'
+    host: settings.rails_host,
+    port: settings.rails_port,
+    path: settings.confirm_path,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': post_data.length
+    }
   };
 
   var req = http.request(options, function(res) {
@@ -23,6 +29,6 @@ exports.request = function(cookie, callback){
   });
 
   // write data to request body
-  req.write('cookie_string='+cookie);
+  req.write(post_data);
   req.end();
 }
