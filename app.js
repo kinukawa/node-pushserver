@@ -8,12 +8,13 @@ var express = require('express')
   , user = require('./routes/user')
   , PushNotifications = require('./routes/PushNotifications')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , settings = require('./settings');
 
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 2999);
+app.set('port', process.env.PORT || settings.express_port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -39,7 +40,7 @@ http.createServer(app).listen(app.get('port'), function(){
  * websocket
  */
 var WebSocketServer = require('ws').Server;
-var ws_port = 2998;
+var ws_port = settings.ws_port;
 var wss = new WebSocketServer({port: ws_port});
 var authorize = require('./authorize');
 var SocketManager = require('./SocketManager');
