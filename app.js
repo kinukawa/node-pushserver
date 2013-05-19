@@ -70,6 +70,10 @@ wss.on('connection', function(ws) {
     }
   });
 
+  ws.on('error', function (error){
+    console.log(error);
+  });
+
   ws.on('close', function (){
     console.log('close');
   });
